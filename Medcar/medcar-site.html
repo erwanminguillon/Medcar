@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medcar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --navy:    #0d2550;
+  --blue:    #1a3d8f;
+  --accent:  #1e5fcf;
+  --sky:     #3b82f6;
+  --white:   #ffffff;
+  --off:     #f0f4fb;
+  --text:    #1a2744;
+  --muted:   #4a607f;
+  --line:    rgba(30,95,207,0.15);
+}
+
+body {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 400;
+  background: var(--off);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 64px;
+  background: rgba(13,37,80,0.97);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(59,130,246,0.2);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 4rem;
+}
+
+.nav-logo img {
+  height: 32px;
+  display: block;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex; gap: 2.5rem; align-items: center;
+}
+
+.nav-links a {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.82rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--white); }
+
+.nav-links a.pill {
+  color: var(--sky);
+  border: 1px solid rgba(59,130,246,0.35);
+  padding: 0.3rem 0.9rem;
+  border-radius: 3px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-links a.pill:hover {
+  background: rgba(59,130,246,0.12);
+  color: var(--white);
+}
+
+/* ── Reveal animation ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── Section utilities ── */
+.container { max-width: 1140px; margin: 0 auto; }
+
+.label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent);
+  display: flex; align-items: center; gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+.label::before {
+  content: '';
+  width: 20px; height: 2px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+h2 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+  font-weight: 700; line-height: 1.1;
+  color: var(--navy);
+  margin-bottom: 1rem;
+}
+
+.intro {
+  font-size: 1rem; line-height: 1.8;
+  color: var(--muted);
+  max-width: 600px;
+}
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 80px 4rem 4rem;
+  background:
+    radial-gradient(ellipse 65% 55% at 62% 45%, rgba(30,95,207,0.16) 0%, transparent 70%),
+    linear-gradient(155deg, var(--navy) 0%, #091c42 55%, #060f23 100%);
+  position: relative; overflow: hidden;
+}
+
+/* subtle grid */
+#hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.06) 1px, transparent 1px);
+  background-size: 52px 52px;
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 1140px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: center;
+  position: relative; z-index: 1;
+}
+
+.hero-status {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--sky);
+  border: 1px solid rgba(59,130,246,0.3);
+  background: rgba(30,95,207,0.12);
+  padding: 0.3rem 0.9rem;
+  border-radius: 2px;
+  margin-bottom: 1.6rem;
+}
+
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--sky);
+  animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.7); }
+}
+
+h1 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(2.8rem, 5vw, 4.4rem);
+  font-weight: 700; line-height: 1.04;
+  color: var(--white);
+  margin-bottom: 1.3rem;
+}
+
+h1 strong {
+  color: var(--sky);
+  font-weight: 700;
+}
+
+.hero-desc {
+  font-size: 1.05rem; line-height: 1.75;
+  color: rgba(255,255,255,0.58);
+  max-width: 460px;
+  margin-bottom: 2.5rem;
+}
+
+.cta-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+.btn {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700; font-size: 0.88rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.82rem 2rem;
+  border-radius: 3px;
+  text-decoration: none;
+  border: none; cursor: pointer;
+  transition: transform 0.18s, background 0.18s, border-color 0.18s;
+}
+
+.btn:hover { transform: translateY(-2px); }
+
+.btn-fill {
+  background: var(--accent);
+  color: var(--white);
+}
+.btn-fill:hover { background: var(--sky); }
+
+.btn-ghost {
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  border: 1.5px solid rgba(255,255,255,0.25);
+}
+.btn-ghost:hover { border-color: var(--sky); color: var(--sky); }
+
+.hero-img {
+  display: flex; justify-content: center; align-items: center;
+}
+
+.hero-img img {
+  width: 400px; max-width: 100%;
+  filter: drop-shadow(0 20px 55px rgba(30,95,207,0.45));
+  animation: float 4.5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-16px); }
+}
+
+/* ── PRESENTATION ── */
+#presentation {
+  padding: 7rem 4rem;
+  background: var(--white);
+}
+
+.pres-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 5rem; align-items: center;
+  margin-top: 3.5rem;
+}
+
+.pres-body p {
+  font-size: 0.97rem; line-height: 1.82;
+  color: var(--muted);
+  margin-bottom: 1.1rem;
+}
+
+.pres-body p:last-child { margin-bottom: 0; }
+
+.stats {
+  margin-top: 2.5rem;
+  display: flex; gap: 3rem; flex-wrap: wrap;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+
+.stat-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2.6rem; font-weight: 700;
+  color: var(--accent); line-height: 1;
+}
+
+.stat-txt {
+  font-size: 0.8rem; color: var(--muted);
+  margin-top: 0.2rem; line-height: 1.4;
+}
+
+.pres-visual {
+  background: var(--off);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3rem 2rem;
+  display: flex; justify-content: center; align-items: center;
+}
+
+.pres-visual img { width: 100%; max-width: 280px; }
+
+/* ── HOW ── */
+#how {
+  padding: 7rem 4rem;
+  background: var(--off);
+}
+
+.steps {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 1.25rem;
+  margin-top: 3.5rem;
+}
+
+.step {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 2rem 1.5rem;
+  position: relative;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.step:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(13,37,80,0.09);
+}
+
+.step-n {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 3.8rem; font-weight: 700;
+  color: rgba(30,95,207,0.08);
+  position: absolute; top: 0.75rem; right: 1rem;
+  line-height: 1; user-select: none;
+}
+
+.step-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.step-icon svg {
+  width: 22px; height: 22px;
+  stroke: white; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.step h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--navy); margin-bottom: 0.65rem;
+}
+
+.step p {
+  font-size: 0.88rem; line-height: 1.72; color: var(--muted);
+}
+
+/* ── OBJECTIFS ── */
+#objectifs {
+  padding: 7rem 4rem;
+  background: var(--navy);
+}
+
+#objectifs h2 { color: var(--white); }
+#objectifs .label { color: var(--sky); }
+#objectifs .label::before { background: var(--sky); }
+#objectifs .intro { color: rgba(255,255,255,0.52); }
+
+.goals {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1.25rem;
+  margin-top: 3.5rem;
+}
+
+.goal {
+  border: 1px solid rgba(59,130,246,0.18);
+  border-radius: 5px;
+  padding: 2rem 1.75rem;
+  background: rgba(255,255,255,0.03);
+  transition: background 0.25s, border-color 0.25s;
+}
+
+.goal:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(59,130,246,0.4);
+}
+
+.goal-tag {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--sky); margin-bottom: 0.85rem;
+}
+
+.goal h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--white); margin-bottom: 0.65rem;
+}
+
+.goal p {
+  font-size: 0.88rem; line-height: 1.72;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ── CREATEUR ── */
+#createur {
+  padding: 7rem 4rem;
+  background: var(--white);
+}
+
+.creator-wrap {
+  margin-top: 3rem;
+  display: flex; align-items: flex-start; gap: 2.5rem;
+  background: var(--off);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2.5rem 3rem;
+  max-width: 700px;
+}
+
+.creator-avatar {
+  flex-shrink: 0;
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--sky));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem; font-weight: 700; color: white;
+}
+
+.creator-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem; font-weight: 700; color: var(--navy);
+  margin-bottom: 0.2rem;
+}
+
+.creator-role {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 0.9rem;
+}
+
+.creator-bio {
+  font-size: 0.94rem; line-height: 1.78; color: var(--muted);
+}
+
+/* ── FAQ ── */
+#faq {
+  padding: 7rem 4rem;
+  background: var(--off);
+}
+
+.faq-list {
+  margin-top: 3rem;
+  max-width: 780px;
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+
+.faq-item {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.faq-q {
+  padding: 1.2rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem; font-weight: 700; color: var(--navy);
+  user-select: none;
+  gap: 1rem;
+}
+
+.faq-chevron {
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+  stroke: var(--accent); fill: none;
+  stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform 0.28s;
+}
+
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+.faq-a {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.38s ease, padding 0.28s ease;
+  padding: 0 1.5rem;
+  font-size: 0.91rem; line-height: 1.78; color: var(--muted);
+}
+
+.faq-item.open .faq-a {
+  max-height: 320px;
+  padding: 0 1.5rem 1.25rem;
+}
+
+/* ── SPECS ── */
+#specs {
+  padding: 7rem 4rem;
+  background: var(--white);
+}
+
+.specs-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.25rem; margin-top: 3.5rem;
+}
+
+.spec-block {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 2rem;
+  background: var(--off);
+}
+
+.spec-block h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem; font-weight: 700; color: var(--navy);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--accent);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+.spec-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  font-size: 0.88rem;
+  gap: 1rem;
+}
+
+.spec-row:last-child { border-bottom: none; }
+.spec-k { color: var(--muted); }
+.spec-v {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700; color: var(--navy);
+  text-align: right;
+}
+
+/* ── ILLUSTRATION ── */
+#illustration {
+  padding: 7rem 4rem;
+  background: var(--off);
+}
+
+.illustration-visual {
+  margin-top: 3.5rem;
+  display: flex; justify-content: center; align-items: center;
+}
+
+.illustration-visual img { width: 100%; max-width: 800px; }
+
+/* ── Footer ── */
+footer {
+  background: #060f23;
+  border-top: 1px solid rgba(59,130,246,0.12);
+  padding: 2rem 4rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+footer p { font-size: 0.8rem; color: rgba(255,255,255,0.3); }
+footer img { height: 24px; }
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  nav { padding: 0 2rem; }
+  #hero, #presentation, #how, #objectifs, #createur, #faq, #specs, #illustration { padding-left: 2rem; padding-right: 2rem; }
+  .hero-inner, .pres-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .hero-img { display: none; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .goals { grid-template-columns: 1fr 1fr; }
+  .specs-grid { grid-template-columns: 1fr; }
+  footer { padding: 2rem; }
+}
+
+@media (max-width: 580px) {
+  .steps, .goals { grid-template-columns: 1fr; }
+  .nav-links li:not(:last-child) { display: none; }
+  .creator-wrap { flex-direction: column; gap: 1.5rem; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+      <img src="logo-mini.png" alt="Medcar">
+  </div>
+  <ul class="nav-links">
+    <li><a href="#presentation">Présentation</a></li>
+    <li><a href="#how">Fonctionnement</a></li>
+    <li><a href="#objectifs">Objectifs</a></li>
+    <li><a href="#createur">Concepteur</a></li>
+    <li><a href="#faq" class="pill">FAQ</a></li>
+    <li><a href="#specs" class="pill">Fiche technique</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-status">
+        <span class="status-dot"></span>
+        Projet hospitalier · Innovation 2026
+      </div>
+      <h1>La logistique<br>médicamenteuse<br><strong>réinventée</strong></h1>
+      <p class="hero-desc">Medcar est un système de transport autonome fixé au plafond qui achemine les médicaments directement aux points de soin, permettant aux infirmières de se concentrer sur ce qui compte.</p>
+      <div class="cta-row">
+        <a href="#how" class="btn btn-fill">Voir le fonctionnement</a>
+        <a href="#specs" class="btn btn-ghost">Fiche technique</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="logo.png" alt="Robot Medcar">
+    </div>
+  </div>
+</section>
+
+<!-- PRESENTATION -->
+<section id="presentation">
+  <div class="container">
+    <div class="label reveal">Le projet</div>
+    <h2 class="reveal reveal-delay-1">Qu'est-ce que Medcar ?</h2>
+    <div class="pres-grid">
+      <div class="pres-body">
+        <p class="reveal reveal-delay-1">Medcar est un robot de transport de médicaments suspendu à un réseau de rails fixé au plafond hospitalier. Via une interface numérique, le personnel soignant commande l'envoi d'un médicament vers une chambre précise en quelques secondes.</p>
+        <p class="reveal reveal-delay-2">Le robot prend en charge l'acheminement de manière entièrement autonome, en suivant les rails installés dans les couloirs. A destination, il dépose le médicament dans une boite sécurisée fixée près de la porte de la chambre, accessible uniquement par le soignant habilité.</p>
+        <p class="reveal reveal-delay-3">Le système est conçu pour s'intégrer dans les établissements existants sans travaux lourds ni modifications structurelles majeures.</p>
+        <div class="stats reveal reveal-delay-4">
+          <div>
+            <div class="stat-num">Zx</div>
+            <div class="stat-txt">Gain de temps<br>estimé</div>
+          </div>
+          <div>
+            <div class="stat-num">0</div>
+            <div class="stat-txt">Erreur de<br>livraison cible</div>
+          </div>
+          <div>
+            <div class="stat-num">24/7</div>
+            <div class="stat-txt">Disponibilité<br>du système</div>
+          </div>
+        </div>
+      </div>
+      <div class="pres-visual reveal reveal-delay-2">
+        <img src="logo.png" alt="Illustration Medcar">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="label reveal">Processus</div>
+    <h2 class="reveal reveal-delay-1">Comment ca fonctionne ?</h2>
+    <p class="intro reveal reveal-delay-2">En quatre etapes, Medcar garantit la livraison rapide et securisee de tout medicament au sein de l'etablissement.</p>
+    <div class="steps">
+      <div class="step reveal reveal-delay-1">
+        <div class="step-n">01</div>
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+        </div>
+        <h3>Commande numerique</h3>
+        <p>L'infirmiere saisit le numero de chambre et le medicament souhaite depuis l'application sur smartphone ou tablette. La demande est transmise instantanement au systeme central.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-n">02</div>
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg>
+        </div>
+        <h3>Traitement automatique</h3>
+        <p>Le systeme identifie le medicament disponible a la pharmacie de l'etage, charge la capsule de transport et planifie l'itineraire optimal sur le reseau de rails.</p>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-n">03</div>
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M15 6l6 6-6 6"/></svg>
+        </div>
+        <h3>Transport au plafond</h3>
+        <p>Le robot parcourt les rails dans les couloirs pour rejoindre la chambre cible. Il se deplace silencieusement, sans gener la circulation du personnel.</p>
+      </div>
+      <div class="step reveal reveal-delay-4">
+        <div class="step-n">04</div>
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        </div>
+        <h3>Livraison securisee</h3>
+        <p>A destination, le medicament est depose dans la boite verrouillee fixee a la porte. L'infirmiere recoit une notification et recupere le traitement en toute securite.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OBJECTIFS -->
+<section id="objectifs">
+  <div class="container">
+    <div class="label reveal">Notre mission</div>
+    <h2 class="reveal reveal-delay-1">Pourquoi Medcar ?</h2>
+    <p class="intro reveal reveal-delay-2">Les equipes soignantes perdent chaque jour un temps precieux dans des trajets repetitifs vers la pharmacie. Medcar s'attaque a ce probleme concret.</p>
+    <div class="goals">
+      <div class="goal reveal reveal-delay-1">
+        <div class="goal-tag">Efficacite</div>
+        <h3>Optimiser le temps infirmier</h3>
+        <p>En automatisant les allers-retours a la pharmacie, Medcar permet au personnel soignant de consacrer davantage de temps aux patients et aux soins a forte valeur ajoutee.</p>
+      </div>
+      <div class="goal reveal reveal-delay-2">
+        <div class="goal-tag">Securite</div>
+        <h3>Reduire les erreurs de delivrance</h3>
+        <p>Le tracage numerique de chaque livraison et la verification automatique du medicament limitent les risques d'erreur humaine dans le circuit du medicament.</p>
+      </div>
+      <div class="goal reveal reveal-delay-3">
+        <div class="goal-tag">Ergonomie</div>
+        <h3>Ameliorer les conditions de travail</h3>
+        <p>Moins de marche, moins de manutention, moins de stress logistique. Medcar contribue au bien-etre des equipes et a la prevention des troubles musculo-squelettiques.</p>
+      </div>
+      <div class="goal reveal reveal-delay-1">
+        <div class="goal-tag">Integration</div>
+        <h3>S'adapter a l'existant</h3>
+        <p>Le systeme de rails est concu pour s'installer dans les etablissements en activite, avec un impact minimal sur l'architecture et le fonctionnement quotidien du service.</p>
+      </div>
+      <div class="goal reveal reveal-delay-2">
+        <div class="goal-tag">Continuite</div>
+        <h3>Fonctionnement 24h/24</h3>
+        <p>Contrairement a un service humain, Medcar opere de nuit comme de jour, garantissant une disponibilite constante pour les urgences medicamenteuses hors heures ouvertes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREATEUR -->
+<section id="createur">
+  <div class="container">
+    <div class="label reveal">L'initiateur</div>
+    <h2 class="reveal reveal-delay-1">Concepteur du projet</h2>
+    <p class="intro reveal reveal-delay-2">Medcar est le fruit du travail d'un seul porteur de projet, alliant competences techniques et vision du terrain hospitalier.</p>
+    <div class="creator-wrap reveal reveal-delay-2">
+      <div class="creator-avatar">PN</div>
+      <div>
+        <div class="creator-name">Prenom Nom</div>
+        <div class="creator-role">Concepteur et porteur de projet</div>
+        <p class="creator-bio">Texte de presentation a completer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="label reveal">Questions frequentes</div>
+    <h2 class="reveal reveal-delay-1">FAQ</h2>
+    <div class="faq-list">
+
+      <div class="faq-item reveal reveal-delay-1">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Qu'est-ce que Medcar exactement ?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-a">Medcar est un robot de transport de medicaments suspendu a un reseau de rails fixe au plafond d'un etablissement de sante. Il achemine automatiquement les traitements depuis la pharmacie vers les chambres des patients, sur simple demande via une application mobile.</div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-2">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Le systeme est-il compatible avec tous les etablissements ?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-a">Le rail est concu pour s'adapter aux couloirs standards des hopitaux et cliniques. Une etude prealable du site est realisee avant toute installation pour valider la faisabilite.</div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-3">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Que se passe-t-il en cas de panne du robot ?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-a">A définir</div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-1">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Comment est garantie la confidentialite des donnees ?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-a">Toutes les communications entre l'application et le systeme central sont chiffrees. Les donnees de livraison sont conservees dans un systeme securise conforme au RGPD et aux exigences HDS (Hebergeur de Donnees de Sante).</div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-2">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Combien de temps prend une livraison type ?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-a">Sur un etage standard d'environ X metres de long, le temps de livraison moyen est estime entre X secondes et X minutes selon la distance et la file d'attente eventuelle. C'est jusqu'a X fois plus rapide qu'un trajet pedestre aller-retour a la pharmacie.</div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-3">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Quel est le niveau de bruit du robot ?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-a">Le robot est concu pour fonctionner silencieusement.</div>
+      </div>
+
+      <div class="faq-item reveal reveal-delay-1">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Peut-on transporter des medicaments necessitant une chaine du froid ?
+          <svg class="faq-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-a">A définir</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SPECS -->
+<section id="specs">
+  <div class="container">
+    <div class="label reveal">Documentation</div>
+    <h2 class="reveal reveal-delay-1">Fiche technique</h2>
+    <p class="intro reveal reveal-delay-2">Specifications materielles et logicielles du systeme Medcar (Les valeurs marquees "A definir" seront completees au fil du developpement.)</p>
+    <div class="specs-grid">
+
+      <div class="spec-block reveal reveal-delay-1">
+        <h3>Mecanique et structure</h3>
+        <div class="spec-row"><span class="spec-k">Type de rail</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Portee max. sans support</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Charge utile max.</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Masse du robot</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Materiaux boitier</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Indice de protection</span><span class="spec-v">A definir</span></div>
+      </div>
+
+      <div class="spec-block reveal reveal-delay-2">
+        <h3>Motorisation et energie</h3>
+        <div class="spec-row"><span class="spec-k">Type de moteur</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Vitesse nominale</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Vitesse max.</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Alimentation</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Consommation nominale</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Recuperation d'energie</span><span class="spec-v">A definir</span></div>
+      </div>
+
+      <div class="spec-block reveal reveal-delay-1">
+        <h3>Electronique et capteurs</h3>
+        <div class="spec-row"><span class="spec-k">Microcontroleur</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Localisation</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Detection d'obstacles</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Communication</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Interface operateur</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Memoire embarquee</span><span class="spec-v">A definir</span></div>
+      </div>
+
+      <div class="spec-block reveal reveal-delay-2">
+        <h3>Logiciel et securite</h3>
+        <div class="spec-row"><span class="spec-k">OS embarque</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Application mobile</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Protocole comm.</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Chiffrement</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Conformite</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Mise a jour firmware</span><span class="spec-v">A definir</span></div>
+      </div>
+
+      <div class="spec-block reveal reveal-delay-1">
+        <h3>Installation</h3>
+        <div class="spec-row"><span class="spec-k">Hauteur min. sous plafond</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Largeur couloir min.</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Boite de depot</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Temps d'installation</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Certification visee</span><span class="spec-v">A definir</span></div>
+      </div>
+
+      <div class="spec-block reveal reveal-delay-2">
+        <h3>Performances</h3>
+        <div class="spec-row"><span class="spec-k">Delai de livraison moyen</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Disponibilite cible</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Duree de vie estimee</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Niveau sonore</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Temperature d'operation</span><span class="spec-v">A definir</span></div>
+        <div class="spec-row"><span class="spec-k">Humidite relative</span><span class="spec-v">A definir</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ILLUSTRATION -->
+<section id="illustration">
+  <div class="container">
+    <div class="label reveal">Illustration</div>
+    <h2 class="reveal reveal-delay-1">Illustration</h2>
+    <div class="illustration-visual reveal reveal-delay-2">
+      <img src="dessin.png" alt="Illustration Medcar">
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>2026 Medcar. Tous droits reserves.</p>
+  <img src="logo-mini.png" alt="Medcar">
+</footer>
+
+<script>
+  // ── Scroll reveal ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── FAQ accordion ──
+  function toggleFaq(btn) {
+    const item = btn.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // ── Nav active highlight on scroll ──
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current
+        ? 'var(--white)'
+        : '';
+    });
+  }, { passive: true });
+</script>
+
+</body>
+</html>
